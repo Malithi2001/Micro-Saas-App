@@ -1,0 +1,13 @@
+name: CI Pipeline
+on: [push]  # Runs on every git push
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4  # Check out your code
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 18.x  # Use Node.js 18
+      - run: npm install
+      - run: npm test  # Replace with your test command

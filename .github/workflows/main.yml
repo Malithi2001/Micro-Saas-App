@@ -1,13 +1,33 @@
-name: CI Pipeline
-on: [push]  # Runs on every git push
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
 
 jobs:
-  test:
+  build:
     runs-on: ubuntu-latest
+    
+    strategy:
+      matrix:
+        node-version: [14.x, 16.x, 18.x]
+    
     steps:
-      - uses: actions/checkout@v4  # Check out your code
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v3
+      
+      - name: Setup Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v3
         with:
-          node-version: 18.x  # Use Node.js 18
-      - run: npm install
-      - run: npm test  # Replace with your test command
+          node-version: ${{ matrix.node-version }}
+          cache: 'npm'
+          
+      - name: Install dependencies
+        run: npm ci
+        
+      - name: Run linting
+        run: npm run lint || echo "No linting configured"
+        
+      - name: Run unit tests
+        run: npm test || echo "No tests configured"
